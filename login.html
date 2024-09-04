@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Form</title>
+    <style>
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h2>Login Form</h2>
+    <form id="loginForm">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username"><br><br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password"><br><br>
+
+        <label>
+            <input type="checkbox" id="rememberMe" name="rememberMe">
+            Remember Me
+        </label><br><br>
+
+        <button type="submit">Login</button>
+    </form>
+
+    <p class="error" id="errorMessages"></p>
+
+    <script>
+        // Utility functions for cookies
+        function setCookie(name, value, days) {
+            const d = new Date();
+            d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+            const expires = "expires=" + d.toUTCString();
+            document.cookie = name + "=" + value + ";" + expires + ";path=/";
+        }
+
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+
+        // Populate form from cookies if available
+        window.onload = function() {
+            const savedUsername = getCookie("username");
+            if (savedUsername) {
+                document.getElementById('username').value = savedUsername;
+                document.getElementById('rememberMe').checked = true;
+            }
+        };
+
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            let errors = [];
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+
+            // Check all fields are filled
+            if (!username || !password) {
+                errors.push("All fields are required.");
+            }
+
+            // Display errors or proceed with form submission
+            const errorMessages = document.getElementById('errorMessages');
+            if (errors.length > 0) {
+                errorMessages.textContent = errors.join(' ');
+            } else {
+                errorMessages.textContent = "";
+                if (rememberMe) {
+                    setCookie("username", username, 30); // Save username for 30 days
+                } else {
+                    setCookie("username", "", -1); // Clear the cookie
+                }
+                alert("Login successful!");
+                // Add actual login logic here
+            }
+        });
+    </script>
+</body>
+</html>
